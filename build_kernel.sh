@@ -196,7 +196,7 @@ show_help() {
     echo ""
     echo "Modes:"
     echo "  --vanilla, -v, --nonroot   Build only Non-Root (Vanilla) variant (default)"
-    echo "  --root, -r                 Build only ReSukiSU + SUSFS + KPM + NoMount variant"
+    echo "  --root, -r                 Build only ReSukiSU + SUSFS + NoMount variant"
     echo "  --all, -a                  Build both Non-Root and Root variants"
     echo ""
     echo "Examples:"

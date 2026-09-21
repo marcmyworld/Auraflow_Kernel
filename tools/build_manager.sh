@@ -6,7 +6,7 @@ KERNEL_DIR="$(cd "$DIR/.." && pwd)"
 MANAGER_DIR="$KERNEL_DIR/tools/manager"
 KEYSTORE_PATH="$KERNEL_DIR/tools/keystore/auraflow-key.jks"
 OUTPUT_DIR="$KERNEL_DIR/tools/sukisu_managers"
-ARTIFACTS_MANAGERS_DIR="$KERNEL_DIR/artifacts/SukiSU-Managers"
+ARTIFACTS_MANAGERS_DIR="$KERNEL_DIR/artifacts/ReSukiSU-Managers"
 
 blue='\033[0;34m'
 cyan='\033[0;36m'
@@ -34,12 +34,10 @@ fi
 echo -e "Java Version: $(java -version 2>&1 | head -n 1)"
 
 # Locate Android SDK
-if [ -z "$ANDROID_HOME" ]; then
-    if [ -d "$HOME/android-sdk" ]; then
-        export ANDROID_HOME="$HOME/android-sdk"
-    elif [ -d "/opt/android-sdk" ]; then
-        export ANDROID_HOME="/opt/android-sdk"
-    fi
+if [ -d "$HOME/android-sdk" ]; then
+    export ANDROID_HOME="$HOME/android-sdk"
+elif [ -z "$ANDROID_HOME" ] && [ -d "/opt/android-sdk" ]; then
+    export ANDROID_HOME="/opt/android-sdk"
 fi
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 echo -e "Android SDK:  $ANDROID_HOME"

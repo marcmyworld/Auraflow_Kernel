@@ -94,7 +94,7 @@ fun NavigationBar(
                 selectedIndex = pagerState.targetPage,
                 onSelected = { handlePageChange(it) },
                 tabsCount = destinations.size,
-                isBlurEnabled = LocalBlurState.current != null || themeConfig.isEnableBlur,
+                isBlurEnabled = LocalBlurState.current != null,
             ) { activateTab ->
                 destinations.forEachIndexed { index, destination ->
                     FloatingBottomBarItem(

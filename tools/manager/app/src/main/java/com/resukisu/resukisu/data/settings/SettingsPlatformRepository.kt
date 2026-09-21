@@ -61,7 +61,7 @@ class SettingsPlatformRepository(
         cardConfig.save()
         return SettingsPlatformSnapshot(
             dpi = settings.getInt("app_dpi", 0),
-            predictiveBackAnimation = settings.getString("predictive_back_animation", "scale").orEmpty(),
+            predictiveBackAnimation = settings.getString("predictive_back_animation", "").orEmpty(),
             predictiveBackExitDirection = settings.getString("predictive_back_exit_direction", "")
                 .orEmpty(),
             themeMode = themeMode,

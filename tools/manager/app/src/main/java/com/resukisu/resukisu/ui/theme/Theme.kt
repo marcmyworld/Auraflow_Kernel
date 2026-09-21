@@ -136,10 +136,10 @@ class ThemeConfig(
     var isThemeChanging by mutableStateOf(false)
     var preventBackgroundRefresh by mutableStateOf(false)
     var isHighContrastMode by mutableStateOf(false)
-    var isEnableBlur by mutableStateOf(true)
-    var isEnableBlurExp by mutableStateOf(true)
+    var isEnableBlur by mutableStateOf(false)
+    var isEnableBlurExp by mutableStateOf(false)
     var isUseBackgroundSeedColor by mutableStateOf(false)
-    var bottomBarStyle by mutableStateOf(BottomBarStyle.FLOATING)
+    var bottomBarStyle by mutableStateOf(BottomBarStyle.MATERIAL3_EXPRESSIVE)
 
     // 主题变化检测
     private var lastDarkModeState: Boolean? = null
@@ -289,7 +289,7 @@ class BackgroundManager(
         }
 
         config.backgroundDim = prefs.getFloat("background_dim", 0f).coerceIn(0f, 1f)
-        config.isEnableBlurExp = prefs.getBoolean("enable_blur_exp", true)
+        config.isEnableBlurExp = prefs.getBoolean("enable_blur_exp", false)
         config.isUseBackgroundSeedColor = prefs.getBoolean("use_background_seed_color", false)
         config.isHighContrastMode = prefs.getBoolean("high_contrast_mode", false)
     }
@@ -448,8 +448,8 @@ private fun ThemeInitializer(
             themeConfig.dynamicPaletteStyle = themeRepository.loadDynamicPaletteStyle(
                 themeConfig.dynamicColorSpec,
             )
-            themeConfig.isEnableBlur = settings.getBoolean("enable_blur", true)
-            themeConfig.bottomBarStyle = BottomBarStyle.fromOrdinal(settings.getInt("bottom_bar_style", BottomBarStyle.FLOATING.ordinal))
+            themeConfig.isEnableBlur = settings.getBoolean("enable_blur", false)
+            themeConfig.bottomBarStyle = BottomBarStyle.fromOrdinal(settings.getInt("bottom_bar_style", 0))
             cardConfig.load()
 
             if (!themeConfig.backgroundImageLoaded && !themeConfig.preventBackgroundRefresh) {

@@ -40,7 +40,6 @@
 #include "sulog/event.h"
 #include "sulog/fd.h"
 #include "supercall/supercall.h"
-#include "kpm/kpm.h"
 
 static int do_grant_root(void __user *arg)
 {
@@ -920,21 +919,6 @@ static int do_get_hook_type(void __user *arg)
     return 0;
 }
 
-// 102. ENABLE_KPM - Check if KPM is enabled
-static int do_enable_kpm(void __user *arg)
-{
-    struct ksu_enable_kpm_cmd cmd;
-
-    cmd.enabled = 1;
-
-    if (copy_to_user(arg, &cmd, sizeof(cmd))) {
-        pr_err("enable_kpm: copy_to_user failed\n");
-        return -EFAULT;
-    }
-
-    return 0;
-}
-
 static int do_dynamic_manager(void __user *arg)
 {
 #ifdef CONFIG_KSU_DISABLE_MANAGER
@@ -1389,18 +1373,6 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .cmd = KSU_IOCTL_GET_KERNEL_PATCH_IMPLEMENT, 
         .name = "GET_KERNEL_PATCH_IMPLEMENT", 
         .handler = do_get_kernel_patch_implement, 
-        .perm_check = manager_or_root 
-    },
-    { 
-        .cmd = KSU_IOCTL_ENABLE_KPM, 
-        .name = "GET_ENABLE_KPM", 
-        .handler = do_enable_kpm, 
-        .perm_check = always_allow 
-    },
-    { 
-        .cmd = KSU_IOCTL_KPM, 
-        .name = "KPM_OPERATION", 
-        .handler = do_kpm, 
         .perm_check = manager_or_root 
     },
     { 

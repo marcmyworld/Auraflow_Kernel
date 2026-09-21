@@ -45,18 +45,13 @@ artifacts/
 
 ---
 
-## ReSukiSU & SUSFS & KPM & NoMount Integration
+## ReSukiSU & SUSFS & NoMount Integration
 
 - **KernelSU Implementation**: ReSukiSU v4.2.0 (Build `35159`, UAPI `4`)
 - **Mount & Path Hiding**: SUSFS v2.3.0 (`CONFIG_KSU_SUSFS=y`) with inline kernel hooks
-- **Kernel Patch Module**: Native in-kernel KPM v0.11.0 implementation (`CONFIG_KPM=y`) with dynamic module registry and loader
 - **NoMount Subsystem**: Baked-in NoMount path redirection subsystem (`CONFIG_NOMOUNT=y`) for stealth module injection without mount detection
 - **Full Feature Suite Active**: Classic SU command, Kernel umount, ADB Root, SELinux Hide, and SU Logging all functional and enabled
-- **Manager Theme Defaults Active Out of the Box**:
-  - ✨ Blur
-  - 🌊 Floating bottom bar
-  - 💎 Liquid glass
-  - 🔄 Predictive back gesture (Scale animation)
+- **Manager Experience**: Clean, stable upstream Material 3 interface
 - **Manager APK Compatibility**:
   - `ReSukiSU_v4.2.0_Manager.apk`: Standard manager package (`com.resukisu.resukisu`), versionCode `35159`, UAPI `4`.
   - `ReSukiSU_v4.2.0_Spoofed_Manager.apk`: Spoofed package (`com.aura.resukisu`) for detection evasion, versionCode `35159`, UAPI `4`.
@@ -68,23 +63,23 @@ artifacts/
 
 ### 1. NEO Profile (`6.1.174-Auraflow-NEO-v1.0+`)
 - **Vanilla (Non-Root)**:
-  - AnyKernel3 Zip: `783554298b75b670de5c6c8a7fd2fab31591ff46bd066be49866e422766e4348` (`Auraflow-Kernel-NEO-Vanilla-20260922.zip`)
-  - Standalone Boot: `01cde42a0a5007a94b339d0f96e8f85dd8931b955b09a9c926e19d19e82a9176` (`Auraflow-Boot-NEO-Vanilla-20260922.img`)
-- **Root (ReSukiSU + SUSFS + KPM + NoMount)**:
-  - AnyKernel3 Zip: `f5ccc2894dce8f0098c4e406cd604b5f7742e39a2125e7caaeaedc324f2831db` (`Auraflow-Kernel-NEO-Root-v35159-SUSFS-20260922.zip`)
-  - Standalone Boot: `9554f76a73cd914a68771ec45ae46dffbf60d4acccfb1225175715073c41d2cb` (`Auraflow-Boot-NEO-Root-v35159-SUSFS-20260922.img`)
+  - AnyKernel3 Zip: `1e0e45ba7847e1b5dceb1f2c822257965923666f17ec37e0027cffb212261a8b` (`Auraflow-Kernel-NEO-Vanilla-20260922.zip`)
+  - Standalone Boot: `b55c3db3cb2826f2906de1f19ee5745dfc527347a4948286adf100d7058916c8` (`Auraflow-Boot-NEO-Vanilla-20260922.img`)
+- **Root (ReSukiSU + SUSFS + NoMount)**:
+  - AnyKernel3 Zip: `347a490c4280e2f84beea31951411567f56399447a328f670d07172b9971f537` (`Auraflow-Kernel-NEO-Root-v35159-SUSFS-20260922.zip`)
+  - Standalone Boot: `f93c9402dcd94ea1a95873eb779b4580bbcd49251125b75dd5184d58c0a3e191` (`Auraflow-Boot-NEO-Root-v35159-SUSFS-20260922.img`)
 
 ### 2. TURBO Profile (`6.1.174-Auraflow-TURBO-v1.0+`)
 - **Vanilla (Non-Root)**:
-  - AnyKernel3 Zip: `8261c5f0ec812ab82ffc3b10dcfff2d4a5e2362ef4aca375a910f8f56afb7b09` (`Auraflow-Kernel-TURBO-Vanilla-20260922.zip`)
-  - Standalone Boot: `8fda87d7806dc2f3fb0003697b4912d9b74e50f78002ed7d5f48e38d2824d1a4` (`Auraflow-Boot-TURBO-Vanilla-20260922.img`)
-- **Root (ReSukiSU + SUSFS + KPM + NoMount)**:
-  - AnyKernel3 Zip: `744206f627eeff62d27834e67576f75b8e65d02c307dc41693ba8c7e41b2ce9a` (`Auraflow-Kernel-TURBO-Root-v35159-SUSFS-20260922.zip`)
-  - Standalone Boot: `9c9ee5ad1df51dcdf7db0e866b45f674364e3cc6c241dca399b364d20ce5f626` (`Auraflow-Boot-TURBO-Root-v35159-SUSFS-20260922.img`)
+  - AnyKernel3 Zip: `28bcd6948beaee4cf21e105788fd52cc5725b2b110e02c532e3b8703493218c9` (`Auraflow-Kernel-TURBO-Vanilla-20260922.zip`)
+  - Standalone Boot: `d1fba52ed4ca331ad6a4bd062d94315516397b33c3e4c5d6f0769c97c6dac862` (`Auraflow-Boot-TURBO-Vanilla-20260922.img`)
+- **Root (ReSukiSU + SUSFS + NoMount)**:
+  - AnyKernel3 Zip: `4040b8bb7b10ec03c3d29abe6bc87f6cd48991ceeb7902bb4cfd290095a27701` (`Auraflow-Kernel-TURBO-Root-v35159-SUSFS-20260922.zip`)
+  - Standalone Boot: `39fa1b21fee932a3b588ad1e1edd105a13ee2648a9448d6027a6b4ea5301c8c8` (`Auraflow-Boot-TURBO-Root-v35159-SUSFS-20260922.img`)
 
 ### 3. ReSukiSU Managers
-- `ReSukiSU_v4.2.0_Manager.apk`: `7c0a7a6bcb640f3b4522d43345d597c507cf3c0165979a88437335b67b6687bf`
-- `ReSukiSU_v4.2.0_Spoofed_Manager.apk`: `16a76aead3ace0f9d386173c59f420a1cf9a5ca36f7f569c9717d4819d52c4c2`
+- `ReSukiSU_v4.2.0_Manager.apk`: `95fec09bc7ea8340596a807b46fe0dd62e1b5d03df854a19885efb570df199e6`
+- `ReSukiSU_v4.2.0_Spoofed_Manager.apk`: `96f74832449c2de9b55ca1630dae0dd7568b13e0e552c8f91abbd5c8d8b67e0c`
 
 ---
 
@@ -98,4 +93,4 @@ artifacts/
    fastboot flash boot_ab <boot_image_name>.img
    ```
 3. **Manager Installation**:
-   For Root variants, install `ReSukiSU_v4.2.0_Manager.apk` or `ReSukiSU_v4.2.0_Spoofed_Manager.apk` to manage root, modules, and stealth settings.
+   For Root variants, install `ReSukiSU_v4.2.0_Manager.apk` or `ReSukiSU_v4.2.0_Spoofed_Manager.apk` to manage root and stealth settings.

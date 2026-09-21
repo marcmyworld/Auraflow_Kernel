@@ -10,7 +10,7 @@ struct kp_symbol_region {
     uint64_t symbol_end;
 };
 
-u8 kernel_patch_type = KERNEL_PATCH_SUKISU;
+u8 kernel_patch_type = 0;
 static struct kp_symbol_region symbol_region = { 0, 0 };
 
 // yep, read logs is an bad idea, but unless that,
@@ -118,8 +118,8 @@ static int detect_conflict_thread(void *data)
 {
     pr_info("Start checking KernelPatch...");
     if (!try_dump_kp_symbol_addr()) {
-        pr_info("External KernelPatch not found, keeping built-in KPM support\n");
-        kernel_patch_type = KERNEL_PATCH_SUKISU;
+        pr_info("KernelPatch was not found");
+        kernel_patch_type = KERNEL_PATCH_NOT_FOUND;
         return 0;
     }
 
