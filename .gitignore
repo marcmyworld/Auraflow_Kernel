@@ -183,4 +183,5 @@ all_kmi_symbols
 # Trash
 out/
 *.zip
+*.img
 *.log

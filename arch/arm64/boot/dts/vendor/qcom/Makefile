@@ -54,9 +54,11 @@ CLIFFS_APQ_BASE_DTB += cliffsp.dtb cliffs7p.dtb
 ifeq ($(CONFIG_ARCH_CLIFFS),y)
 dtb-y += \
 	peridot-sm8635-overlay.dtbo \
+	chenfeng-sm8635-overlay.dtbo \
 	$(CLIFFS_BASE_DTB)
 
 peridot-sm8635-overlay.dtbo-base := $(CLIFFS_BASE_DTB)
+chenfeng-sm8635-overlay.dtbo-base := $(CLIFFS_BASE_DTB)
 endif
 
 VOLCANO_BASE_DTB += volcano.dtb
