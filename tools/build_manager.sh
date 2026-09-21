@@ -16,7 +16,7 @@ red='\033[0;31m'
 nocol='\033[0m'
 
 echo -e "$cyan=================================================$nocol"
-echo -e "$cyan       BUILDING SUKISU-ULTRA MANAGERS           $nocol"
+echo -e "$cyan       BUILDING RESUKISU MANAGERS               $nocol"
 echo -e "$cyan=================================================$nocol"
 
 # Locate Java 21
@@ -76,54 +76,51 @@ KEY_PASSWORD=auraflowsukisu
 EOF
 
 # -------------------------------------------------------------
-# 1. Build Standard SukiSU-Ultra Manager
+# 1. Build Standard ReSukiSU Manager
 # -------------------------------------------------------------
-echo -e "$yellow[*] Building Standard SukiSU-Ultra Manager APK...$nocol"
+echo -e "$yellow[*] Building Standard ReSukiSU Manager APK...$nocol"
 cd "$MANAGER_DIR"
 ./gradlew clean assembleRelease
 
-STD_APK=$(find "$MANAGER_DIR/app/build/outputs/apk/release" -type f -name "*.apk" | head -n 1)
+STD_APK=$(find "$MANAGER_DIR/app/build/outputs/apk/release" -type f -name "*universal*.apk" | head -n 1)
+if [ -z "$STD_APK" ]; then
+    STD_APK=$(find "$MANAGER_DIR/app/build/outputs/apk/release" -type f -name "*.apk" | head -n 1)
+fi
+
 if [ -f "$STD_APK" ]; then
-    cp -fp "$STD_APK" "$OUTPUT_DIR/SukiSU_v4.2.0_Manager.apk"
-    cp -fp "$STD_APK" "$ARTIFACTS_MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk"
+    cp -fp "$STD_APK" "$OUTPUT_DIR/ReSukiSU_v4.2.0_Manager.apk"
+    cp -fp "$STD_APK" "$ARTIFACTS_MANAGERS_DIR/ReSukiSU_v4.2.0_Manager.apk"
     echo -e "$green[+] Standard Manager APK built successfully:$nocol"
-    echo -e "    $OUTPUT_DIR/SukiSU_v4.2.0_Manager.apk"
+    echo -e "    $OUTPUT_DIR/ReSukiSU_v4.2.0_Manager.apk"
 else
     echo -e "$red[!] Standard Manager build failed! APK not found.$nocol"
     exit 1
 fi
 
 # -------------------------------------------------------------
-# 2. Build Spoofed SukiSU-Ultra Manager
+# 2. Build Spoofed ReSukiSU Manager
 # -------------------------------------------------------------
-echo -e "$yellow[*] Building Spoofed SukiSU-Ultra Manager APK...$nocol"
-SPOOFED_WORK="$(mktemp -d /tmp/sukisu_spoofed_XXXXXX)"
-cp -rp "$MANAGER_DIR/"* "$SPOOFED_WORK/"
-cd "$SPOOFED_WORK"
-rm -rf app/build build .gradle app/.cxx
+echo -e "$yellow[*] Building Spoofed ReSukiSU Manager APK...$nocol"
+cd "$MANAGER_DIR"
+./gradlew assembleRelease -PIS_SPOOFED_BUILD=true -PKSU_PACKAGE_NAME=com.aura.resukisu
 
-# Run randomizer
-bash "$SPOOFED_WORK/randomizer"
+SPOOFED_APK=$(find "$MANAGER_DIR/app/build/outputs/apk/release" -type f -name "*universal*.apk" | head -n 1)
+if [ -z "$SPOOFED_APK" ]; then
+    SPOOFED_APK=$(find "$MANAGER_DIR/app/build/outputs/apk/release" -type f -name "*.apk" | head -n 1)
+fi
 
-# Compile spoofed APK
-./gradlew clean assembleRelease
-
-SPOOFED_APK=$(find "$SPOOFED_WORK/app/build/outputs/apk/release" -type f -name "*.apk" | head -n 1)
 if [ -f "$SPOOFED_APK" ]; then
-    cp -fp "$SPOOFED_APK" "$OUTPUT_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk"
-    cp -fp "$SPOOFED_APK" "$ARTIFACTS_MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk"
+    cp -fp "$SPOOFED_APK" "$OUTPUT_DIR/ReSukiSU_v4.2.0_Spoofed_Manager.apk"
+    cp -fp "$SPOOFED_APK" "$ARTIFACTS_MANAGERS_DIR/ReSukiSU_v4.2.0_Spoofed_Manager.apk"
     echo -e "$green[+] Spoofed Manager APK built successfully:$nocol"
-    echo -e "    $OUTPUT_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk"
+    echo -e "    $OUTPUT_DIR/ReSukiSU_v4.2.0_Spoofed_Manager.apk"
 else
     echo -e "$red[!] Spoofed Manager build failed! APK not found.$nocol"
-    rm -rf "$SPOOFED_WORK"
     exit 1
 fi
 
-rm -rf "$SPOOFED_WORK"
-
 echo -e "$green=================================================$nocol"
-echo -e "$green       SUKISU MANAGERS BUILD COMPLETE            $nocol"
+echo -e "$green       RESUKISU MANAGERS BUILD COMPLETE          $nocol"
 echo -e "$green=================================================$nocol"
-echo -e "Standard Manager: $OUTPUT_DIR/SukiSU_v4.2.0_Manager.apk"
-echo -e "Spoofed Manager:  $OUTPUT_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk"
+echo -e "Standard Manager: $OUTPUT_DIR/ReSukiSU_v4.2.0_Manager.apk"
+echo -e "Spoofed Manager:  $OUTPUT_DIR/ReSukiSU_v4.2.0_Spoofed_Manager.apk"

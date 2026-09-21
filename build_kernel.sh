@@ -53,9 +53,9 @@ build_single_kernel() {
     local ZIP_NAME=""
     local BOOT_IMG_NAME=""
 
-    if [ "$ROOT_MODE" = "SukiSU" ]; then
-        ZIP_NAME="Auraflow-Kernel-${PROFILE}-SukiSU-v40939-SUSFS-${DATE}.zip"
-        BOOT_IMG_NAME="Auraflow-Boot-${PROFILE}-SukiSU-v40939-SUSFS-${DATE}.img"
+    if [ "$ROOT_MODE" = "Root" ]; then
+        ZIP_NAME="Auraflow-Kernel-${PROFILE}-Root-v35159-SUSFS-${DATE}.zip"
+        BOOT_IMG_NAME="Auraflow-Boot-${PROFILE}-Root-v35159-SUSFS-${DATE}.img"
     else
         ZIP_NAME="Auraflow-Kernel-${PROFILE}-Vanilla-${DATE}.zip"
         BOOT_IMG_NAME="Auraflow-Boot-${PROFILE}-Vanilla-${DATE}.img"
@@ -130,12 +130,12 @@ build_single_kernel() {
         fi
     fi
 
-    # For SukiSU variants, provide the matching SukiSU Ultra Manager APKs
-    if [ "$ROOT_MODE" = "SukiSU" ] && [ -d "$MANAGERS_DIR" ]; then
-        echo -e "$yellow[*] Providing SukiSU Ultra Manager APKs in $SUBFOLDER_NAME and artifacts/SukiSU-Managers...$nocol"
-        mkdir -p "$ARTIFACTS_DIR/SukiSU-Managers"
-        [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" "$ARTIFACTS_DIR/SukiSU-Managers/"
-        [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" "$ARTIFACTS_DIR/SukiSU-Managers/"
+    # For Root variants, provide the matching ReSukiSU Manager APKs
+    if [ "$ROOT_MODE" = "Root" ] && [ -d "$MANAGERS_DIR" ]; then
+        echo -e "$yellow[*] Providing ReSukiSU Manager APKs in $SUBFOLDER_NAME and artifacts/ReSukiSU-Managers...$nocol"
+        mkdir -p "$ARTIFACTS_DIR/ReSukiSU-Managers"
+        [ -f "$MANAGERS_DIR/ReSukiSU_v4.2.0_Manager.apk" ] && cp -fp "$MANAGERS_DIR/ReSukiSU_v4.2.0_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/ReSukiSU_v4.2.0_Manager.apk" "$ARTIFACTS_DIR/ReSukiSU-Managers/"
+        [ -f "$MANAGERS_DIR/ReSukiSU_v4.2.0_Spoofed_Manager.apk" ] && cp -fp "$MANAGERS_DIR/ReSukiSU_v4.2.0_Spoofed_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/ReSukiSU_v4.2.0_Spoofed_Manager.apk" "$ARTIFACTS_DIR/ReSukiSU-Managers/"
     fi
 
     echo -e "$green=================================================$nocol"
@@ -168,9 +168,9 @@ print_summary() {
         echo -e "    SHA256: $sha"
     done
     echo ""
-    if [ -d "$ARTIFACTS_DIR/SukiSU-Managers" ]; then
-        echo -e "$greenSukiSU Ultra Manager APKs (v4.2.0 / 40939, UAPI v2):$nocol"
-        for apk in "$ARTIFACTS_DIR/SukiSU-Managers"/*.apk; do
+    if [ -d "$ARTIFACTS_DIR/ReSukiSU-Managers" ]; then
+        echo -e "$greenReSukiSU Manager APKs (v4.2.0 / 35159, UAPI v4):$nocol"
+        for apk in "$ARTIFACTS_DIR/ReSukiSU-Managers"/*.apk; do
             if [ -f "$apk" ]; then
                 local apk_name="$(basename "$apk")"
                 local sz=$(ls -lh "$apk" 2>/dev/null | awk '{print $5}')
@@ -196,19 +196,19 @@ show_help() {
     echo ""
     echo "Modes:"
     echo "  --vanilla, -v, --nonroot   Build only Non-Root (Vanilla) variant (default)"
-    echo "  --root, -r                 Build only SukiSU-Ultra + SUSFS + KPM variant"
+    echo "  --root, -r                 Build only ReSukiSU + SUSFS + KPM + NoMount variant"
     echo "  --all, -a                  Build both Non-Root and Root variants"
     echo ""
     echo "Examples:"
     echo "  $0                         Build Vanilla NEO kernel"
     echo "  $0 neo                     Build Vanilla NEO kernel"
     echo "  $0 turbo                   Build Vanilla TURBO kernel"
-    echo "  $0 --root neo              Build SukiSU NEO kernel"
-    echo "  $0 --root turbo            Build SukiSU TURBO kernel"
-    echo "  $0 --all neo               Build both Vanilla and SukiSU NEO kernels"
-    echo "  $0 --all turbo             Build both Vanilla and SukiSU TURBO kernels"
-    echo "  $0 --all                   Build all 4 kernel variants (NEO & TURBO, Vanilla & SukiSU)"
-    echo "  $0 --root all              Build SukiSU variants for both NEO and TURBO"
+    echo "  $0 --root neo              Build Root NEO kernel"
+    echo "  $0 --root turbo            Build Root TURBO kernel"
+    echo "  $0 --all neo               Build both Vanilla and Root NEO kernels"
+    echo "  $0 --all turbo             Build both Vanilla and Root TURBO kernels"
+    echo "  $0 --all                   Build all 4 kernel variants (NEO & TURBO, Vanilla & Root)"
+    echo "  $0 --root all              Build Root variants for both NEO and TURBO"
 }
 
 build_profile_nonroot() {
@@ -223,14 +223,14 @@ build_profile_nonroot() {
     esac
 }
 
-build_profile_sukisu() {
+build_profile_root() {
     local prof="$1"
     case "$prof" in
         neo)
-            build_single_kernel "NEO" "SukiSU" "chenfeng_neo_sukisu_defconfig"
+            build_single_kernel "NEO" "Root" "chenfeng_neo_sukisu_defconfig"
             ;;
         turbo)
-            build_single_kernel "TURBO" "SukiSU" "chenfeng_turbo_sukisu_defconfig"
+            build_single_kernel "TURBO" "Root" "chenfeng_turbo_sukisu_defconfig"
             ;;
     esac
 }
@@ -298,7 +298,7 @@ for p in "${TARGET_PROFILES[@]}"; do
         build_profile_nonroot "$p"
     fi
     if [ "$MODE" = "root" ] || [ "$MODE" = "all" ]; then
-        build_profile_sukisu "$p"
+        build_profile_root "$p"
     fi
 done
 

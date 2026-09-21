@@ -186,7 +186,8 @@ out/
 *.img
 *.log
 out_artifacts/
-artifacts/
+artifacts/*
+!artifacts/README.md
 tmp/
 .gradle/
 .cxx/

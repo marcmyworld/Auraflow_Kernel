@@ -4,10 +4,17 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.REQUEST_INSTALL_PACKAGES"
+        tools:ignore="RequestInstallPackagesPolicy" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"  android:minSdkVersion="33" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" android:minSdkVersion="28"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" android:minSdkVersion="34"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <uses-sdk tools:overrideLibrary="top.yukonga.miuix.kmp.blur" />
 
@@ -15,22 +22,26 @@
         android:name=".KernelSUApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:directBootAware="true"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:hasFragileUserData="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.KernelSU"
-        android:zygotePreloadName="com.sukisu.ultra.magica.AppZygotePreload"
-        tools:targetApi="R">
+        tools:targetApi="34"
+        android:directBootAware="true"
+        android:zygotePreloadName="com.resukisu.resukisu.magica.AppZygotePreload">
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
             android:enabled="true"
-            android:theme="@style/Theme.KernelSU.Starting"
-            android:windowSoftInputMode="adjustResize">
+            android:launchMode="standard"
+            android:documentLaunchMode="intoExisting"
+            android:autoRemoveFromRecents="true"
+            android:theme="@style/Theme.KernelSU.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -54,24 +65,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/zip" />
                 <data android:mimeType="application/vnd.android.package-archive" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data
-                    android:host="action"
-                    android:scheme="ksu" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data
-                    android:host="webui"
-                    android:scheme="ksu" />
             </intent-filter>
         </activity>
         <!-- 切换图标 -->
@@ -111,11 +104,17 @@
         <activity
             android:name=".ui.webui.WebUIActivity"
             android:autoRemoveFromRecents="true"
-            android:configChanges="density|orientation|screenSize|screenLayout|smallestScreenSize|uiMode|locale|layoutDirection|fontScale|keyboard|keyboardHidden"
             android:documentLaunchMode="intoExisting"
-            android:exported="false"
             android:taskAffinity="${applicationId}.webui"
-            android:theme="@style/Theme.KernelSU.WebUI" />
+            android:exported="false"
+            android:theme="@style/Theme.KernelSU.WebUI"
+            android:configChanges="density|orientation|screenSize|screenLayout|smallestScreenSize|uiMode|locale|layoutDirection|fontScale|keyboard|keyboardHidden"
+            />
+
+        <activity
+            android:name=".ui.screen.themeSettings.crop.BackgroundCropActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KernelSU" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -132,27 +131,24 @@
             android:directBootAware="true"
             android:exported="false"
             android:isolatedProcess="true"
-            android:useAppZygote="true"
-            tools:targetApi="S" />
+            android:useAppZygote="true" />
 
         <service
-            android:name=".ui.util.DownloadService"
+            android:name=".data.download.DownloadService"
             android:exported="false"
-            android:foregroundServiceType="dataSync"
-            tools:targetApi="UPSIDE_DOWN_CAKE" />
+            android:foregroundServiceType="dataSync" />
 
         <receiver
             android:name=".magica.BootCompletedReceiver"
             android:directBootAware="true"
             android:enabled="false"
-            android:exported="true"
-            android:process=":magica_boot">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.sukisu.ultra.magica.LAUNCH" />
+                <action android:name="com.resukisu.resukisu.magica.LAUNCH" />
             </intent-filter>
         </receiver>
     </application>

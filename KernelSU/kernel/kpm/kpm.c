@@ -35,6 +35,8 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0) && defined(CONFIG_MODULES)
 #include <linux/moduleloader.h>
 #endif
+#include "kpm.h"
+#include "uapi/supercall.h"
 
 #define KPM_NAME_LEN 32
 #define KPM_ARGS_LEN 1024
@@ -557,15 +559,14 @@ int do_kpm(void __user *arg)
         return -EFAULT;
     }
 
-    if (!access_ok(cmd.control_code, sizeof(int))) {
-        pr_err("kpm: invalid control_code pointer %px\n",
-               (void *)cmd.control_code);
-        return -EFAULT;
+    if (!sukisu_is_kpm_control_code(cmd.control_code)) {
+        pr_err("kpm: invalid control_code %llu\n", (unsigned long long)cmd.control_code);
+        return -EINVAL;
     }
 
-    if (!access_ok(cmd.result_code, sizeof(int))) {
-        pr_err("kpm: invalid result_code pointer %px\n",
-               (void *)cmd.result_code);
+    if (cmd.result_code && !access_ok((const void __user *)cmd.result_code, sizeof(int))) {
+        pr_err("kpm: invalid result_code pointer %llx\n",
+               (unsigned long long)cmd.result_code);
         return -EFAULT;
     }
 
