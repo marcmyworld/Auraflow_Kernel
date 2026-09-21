@@ -6,12 +6,15 @@ Custom, high-performance, and security-focused Linux kernel built for **Xiaomi S
 
 ## Highlights & Features
 
-- **Upstream LTS Base**: Rebased and updated to **Linux 6.1.174 LTS** (`android14-6.1.174_r00`).
+- **Upstream LTS Base & Dynamic GKI Sublevel**: Rebased and updated to **Linux 6.1.174 LTS** (`android14-6.1.174_r00`). The build pipeline automatically detects and selects the active GKI sublevel directly from `Makefile`, ensuring zero configuration drift when upstream 6.1.y LTS patches are merged.
+- **Centralized Release Versioning**: Auraflow versioning (e.g. `v1.0+`) is centrally managed via `AURAFLOW_VERSION`, allowing seamless version bumping without editing individual defconfigs.
 - **Kernel Version Release String**:
-  - 🌟 **NEO**: `6.1.174-Auraflow-NEO-v1.0+` (reported as `6.1*-Auraflow-NEO-v1.0+` in `uname -r` / Android Settings)
-  - 🚀 **TURBO**: `6.1.174-Auraflow-TURBO-v1.0+` (reported as `6.1*-Auraflow-TURBO-v1.0+` in `uname -r` / Android Settings)
+  - 🌟 **NEO**: `6.1.174-Auraflow-NEO-v1.0+`
+  - 🚀 **TURBO**: `6.1.174-Auraflow-TURBO-v1.0+`
+  Full visible string natively reported in `uname -r` and Android Settings.
 - **Unified cliffs / SM8635 Architecture**: Single unified codebase booting cleanly across both **Xiaomi 14 Civi / Civi 4 Pro** (`chenfeng`) and **POCO F6 / Redmi Turbo 3** (`peridot`).
 - **Compiler Toolchain**: Built with **ZyC Clang 16.0.6** utilizing the full LLVM integrated assembler (`LLVM_IAS=1`) and ThinLTO.
+- **Pure AnyKernel3 Distribution**: Release packages are built exclusively as flashable AnyKernel3 archives (`.zip`), eliminating standalone boot image flashing and preserving ramdisk/init integrity.
 - **Root, Security & Stealth Stack**:
   - **Vanilla (Non-Root)**: Stock-compliant, unrooted kernel variant ideal for banking applications, enterprise compliance, and Play Integrity.
   - **ReSukiSU v4.2.0 (Build 35159, UAPI v4)**: Modern, multi-manager in-kernel root management solution ([ReSukiSU/ReSukiSU](https://github.com/ReSukiSU/ReSukiSU)).
@@ -21,9 +24,11 @@ Custom, high-performance, and security-focused Linux kernel built for **Xiaomi S
 - **Modern Profile Philosophy**:
   - 🌟 **NEO** (Default): Intelligent daily driver delivering optimal power efficiency and buttery smoothness. Configured with power-efficient workqueues (`CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y`), balanced energy curve governor (`CONFIG_KP_DEFAULT_MODE=2`), responsive touch boost, and extended battery life.
   - 🚀 **TURBO**: High, plausibly feasible sustained performance focusing on low-latency scheduling, sustained CPU clocks, and rapid thread wakeups for heavy gaming and intensive multitasking (`CONFIG_KP_DEFAULT_MODE=3`, low-latency workqueues).
-- **ReSukiSU Manager (Clean Upstream UI)**:
-  - Pristine, stable upstream Material 3 interface without experimental layout overrides.
-  - Pre-signed with Auraflow release keystore matching driver verification.
+- **ReSukiSU Manager Suite**:
+  - Stable, pristine Material 3 interface without experimental UI overrides.
+  - Variant root packages include the spoofed stealth manager (`ReSukiSU_v4.2.0_Spoofed_Manager.apk`, `com.aura.resukisu`).
+  - The central `artifacts/Manager/` folder houses both the original (`com.resukisu.resukisu`) and spoofed managers.
+  - Pre-signed with the Auraflow release key recognized by `apk_sign_keys[]` in the kernel driver.
 
 ---
 
@@ -42,31 +47,25 @@ Auraflow Kernel is organized into **2 performance profiles** across **2 root mod
 
 ## Artifacts Structure
 
-All compiled release packages and boot images are organized into dedicated subfolders inside `artifacts/`:
+Release artifacts are distributed exclusively as AnyKernel3 flashable archives and manager APKs inside `artifacts/`:
 
 ```text
 artifacts/
 ├── NEO-Vanilla/
-│   ├── Auraflow-Kernel-NEO-Vanilla-<YYYYMMDD>.zip
-│   └── Auraflow-Boot-NEO-Vanilla-<YYYYMMDD>.img
+│   └── Auraflow-Kernel-NEO-Vanilla-<YYYYMMDD>.zip
 │
 ├── NEO-Root/
 │   ├── Auraflow-Kernel-NEO-Root-v35159-SUSFS-<YYYYMMDD>.zip
-│   ├── Auraflow-Boot-NEO-Root-v35159-SUSFS-<YYYYMMDD>.img
-│   ├── ReSukiSU_v4.2.0_Manager.apk
 │   └── ReSukiSU_v4.2.0_Spoofed_Manager.apk
 │
 ├── TURBO-Vanilla/
-│   ├── Auraflow-Kernel-TURBO-Vanilla-<YYYYMMDD>.zip
-│   └── Auraflow-Boot-TURBO-Vanilla-<YYYYMMDD>.img
+│   └── Auraflow-Kernel-TURBO-Vanilla-<YYYYMMDD>.zip
 │
 ├── TURBO-Root/
 │   ├── Auraflow-Kernel-TURBO-Root-v35159-SUSFS-<YYYYMMDD>.zip
-│   ├── Auraflow-Boot-TURBO-Root-v35159-SUSFS-<YYYYMMDD>.img
-│   ├── ReSukiSU_v4.2.0_Manager.apk
 │   └── ReSukiSU_v4.2.0_Spoofed_Manager.apk
 │
-└── ReSukiSU-Managers/
+└── Manager/ (aliases: Managers/, ReSukiSU-Managers/)
     ├── ReSukiSU_v4.2.0_Manager.apk
     └── ReSukiSU_v4.2.0_Spoofed_Manager.apk
 ```
@@ -75,34 +74,17 @@ artifacts/
 
 ## Installation Guide
 
-### Method 1: Custom Recovery (TWRP / OrangeFox) — Recommended
-1. Reboot the device into custom recovery.
-2. Copy the desired `Auraflow-Kernel-<Profile>-*.zip` to device storage.
-3. Flash the `.zip` archive via the recovery install menu.
+### Custom Recovery (TWRP / OrangeFox)
+1. Reboot the device into custom recovery (TWRP / OrangeFox).
+2. Copy the desired `Auraflow-Kernel-<Profile>-*.zip` to internal storage or USB-OTG.
+3. Flash the `.zip` archive via the recovery install menu. AnyKernel3 will automatically identify your device (`chenfeng` or `peridot`), unpack the current boot partition, inject the Auraflow kernel Image, and repack without disturbing your ramdisk.
 4. Reboot to system.
 
-### Method 2: Fastboot Standalone Boot Image
-1. Reboot your device into Fastboot mode:
-   ```bash
-   adb reboot bootloader
-   ```
-2. Flash the standalone boot image directly across both slots:
-   ```bash
-   fastboot flash boot_ab <boot_image_name>.img
-   ```
-   *Example:*
-   ```bash
-   fastboot flash boot_ab Auraflow-Boot-NEO-Root-v35159-SUSFS-20260922.img
-   ```
-3. Reboot the phone:
-   ```bash
-   fastboot reboot
-   ```
-
 ### ReSukiSU Manager Setup (Root Variants)
-- For Root variants, install `ReSukiSU_v4.2.0_Manager.apk` or `ReSukiSU_v4.2.0_Spoofed_Manager.apk` from the variant folder or `artifacts/ReSukiSU-Managers/`.
-- Signed with the persistent Auraflow release keystore (`8aa0f658cba545308d65c0aaee8b85f98ad54230d1c9f6065a8e156358d48c09`), recognized by `apk_sign_keys[]` in the kernel driver.
-- Superuser grants, NoMount metamodule support, and SUSFS mount hiding work straight out of the box.
+- For Root variants, install `ReSukiSU_v4.2.0_Spoofed_Manager.apk` included in the variant directory (`NEO-Root/` or `TURBO-Root/`).
+- Alternatively, you can install the original package `ReSukiSU_v4.2.0_Manager.apk` from `artifacts/Manager/`.
+- Both packages are pre-signed with the Auraflow release keystore (`8aa0f658cba545308d65c0aaee8b85f98ad54230d1c9f6065a8e156358d48c09`), recognized by `apk_sign_keys[]` in the kernel driver.
+- Superuser management, NoMount path redirection, and SUSFS stealth features work out of the box.
 
 ---
 
@@ -144,6 +126,15 @@ The entire build and packaging pipeline is managed via `./build_kernel.sh`:
 ./build_kernel.sh --all
 ```
 
+### Centralized Version Management & Upstream LTS Check
+```bash
+# Bump Auraflow release version across files and defconfigs (e.g. 1.1)
+./build_kernel.sh --bump-version 1.1
+
+# Check current local GKI sublevel against kernel.org Linux 6.1.y LTS
+./build_kernel.sh --check-lts
+```
+
 ---
 
 ## Hardware & OS Compatibility
@@ -152,9 +143,11 @@ The entire build and packaging pipeline is managed via `./build_kernel.sh`:
   - **Xiaomi 14 Civi / Civi 4 Pro** (`chenfeng` / `chenfengin`)
   - **POCO F6 / Redmi Turbo 3** (`peridot`)
 - **SoC**: Qualcomm Snapdragon 8s Gen 3 (`SM8635` / `cliffs`)
-- **Supported Android OS**: **Android 14 and all above versions (Android 14+)**, fully supporting:
+- **Supported Android OS**: **Android 14, 15, 16, 17, and all above versions (Android 14+)**, fully supporting:
   - Android 14
   - Android 15 / Android 15 QPR
-  - Future Android versions
+  - Android 16
+  - Android 17
+  - All future Android releases
   - Xiaomi HyperOS 1.0 & HyperOS 2.0
   - AOSP, LineageOS, Evolution X, PixelOS, and all modern custom ROMs
