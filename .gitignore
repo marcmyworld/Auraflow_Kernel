@@ -185,3 +185,5 @@ out/
 *.zip
 *.img
 *.log
+out_artifacts/
+KernelSU/
