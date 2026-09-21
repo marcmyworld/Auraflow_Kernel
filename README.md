@@ -7,6 +7,9 @@ Custom, high-performance, and security-focused Linux kernel built for **Xiaomi S
 ## Highlights & Features
 
 - **Upstream LTS Base**: Rebased and updated to **Linux 6.1.174 LTS** (`android14-6.1.174_r00`).
+- **Kernel Version Release String**:
+  - 🌟 **NEO**: `6.1.174-Auraflow-NEO-v1.0+` (reported as `6.1*-Auraflow-NEO-v1.0+` in `uname -r` / Android Settings)
+  - 🚀 **TURBO**: `6.1.174-Auraflow-TURBO-v1.0+` (reported as `6.1*-Auraflow-TURBO-v1.0+` in `uname -r` / Android Settings)
 - **Unified cliffs / SM8635 Architecture**: Single unified codebase booting cleanly on both **Xiaomi 14 Civi / Civi 4 Pro** (`chenfeng`) and **POCO F6 / Redmi Turbo 3** (`peridot`).
 - **Compiler Toolchain**: Built with **ZyC Clang 16.0.6** utilizing the full LLVM integrated assembler (`LLVM_IAS=1`) and ThinLTO.
 - **Root & Security Configurations**:
@@ -24,12 +27,12 @@ Custom, high-performance, and security-focused Linux kernel built for **Xiaomi S
 
 Auraflow Kernel is organized into **2 performance profiles** across **2 root modes** (2×2 = 4 release targets):
 
-| Profile | Mode | Key Configurations | Output Folder |
-|---|---|---|---|
-| **NEO** | Vanilla (Non-Root) | Power-efficient workqueues, balanced energy curve, unrooted | `artifacts/NEO-Vanilla/` |
-| **NEO** | SukiSU + SUSFS + KPM | Power-efficient workqueues, SukiSU-Ultra v40939, SUSFS v2.3.0, KPM | `artifacts/NEO-SukiSU/` |
-| **TURBO** | Vanilla (Non-Root) | Low-latency scheduling, sustained high clocks, unrooted | `artifacts/TURBO-Vanilla/` |
-| **TURBO** | SukiSU + SUSFS + KPM | Low-latency scheduling, SukiSU-Ultra v40939, SUSFS v2.3.0, KPM | `artifacts/TURBO-SukiSU/` |
+| Profile | Mode | Kernel Release (`uname -r`) | Key Configurations | Output Folder |
+|---|---|---|---|---|
+| **NEO** | Vanilla (Non-Root) | `6.1.174-Auraflow-NEO-v1.0+` | Power-efficient workqueues, balanced energy curve, unrooted | `artifacts/NEO-Vanilla/` |
+| **NEO** | SukiSU + SUSFS + KPM | `6.1.174-Auraflow-NEO-v1.0+` | Power-efficient workqueues, SukiSU-Ultra v40939, SUSFS v2.3.0, KPM | `artifacts/NEO-SukiSU/` |
+| **TURBO** | Vanilla (Non-Root) | `6.1.174-Auraflow-TURBO-v1.0+` | Low-latency scheduling, sustained high clocks, unrooted | `artifacts/TURBO-Vanilla/` |
+| **TURBO** | SukiSU + SUSFS + KPM | `6.1.174-Auraflow-TURBO-v1.0+` | Low-latency scheduling, SukiSU-Ultra v40939, SUSFS v2.3.0, KPM | `artifacts/TURBO-SukiSU/` |
 
 ---
 
@@ -79,7 +82,7 @@ artifacts/
    ```bash
    adb reboot bootloader
    ```
-2. Flash the standalone boot image directly to both slots:
+2. Flash the standalone boot image directly across both slots:
    ```bash
    fastboot flash boot_ab <boot_image_name>.img
    ```
@@ -139,10 +142,15 @@ The entire build and packaging pipeline is managed via `./build_kernel.sh`:
 
 ---
 
-## Hardware Compatibility
+## Hardware & OS Compatibility
 
 - **Target Devices**:
   - **Xiaomi 14 Civi / Civi 4 Pro** (`chenfeng` / `chenfengin`)
   - **POCO F6 / Redmi Turbo 3** (`peridot`)
 - **SoC**: Qualcomm Snapdragon 8s Gen 3 (`SM8635` / `cliffs`)
-- **Supported Android OS**: Android 14 (Xiaomi HyperOS, AOSP, LineageOS, Evolution X)
+- **Supported Android OS**: **Android 14 and all above versions (Android 14+)**, fully supporting:
+  - Android 14
+  - Android 15 / Android 15 QPR
+  - Future Android versions
+  - Xiaomi HyperOS 1.0 & HyperOS 2.0
+  - AOSP, LineageOS, Evolution X, PixelOS, and all modern custom ROMs
