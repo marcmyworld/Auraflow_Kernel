@@ -187,3 +187,5 @@ out/
 *.log
 out_artifacts/
 KernelSU/
+artifacts/
+tools/sukisu_managers/
