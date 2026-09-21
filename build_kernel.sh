@@ -42,15 +42,24 @@ declare -a GENERATED_ZIPS=()
 declare -a GENERATED_IMGS=()
 
 build_single_kernel() {
-    local PROFILE="$1"          # Balanced, Battery, Performance
-    local ROOT_MODE="$2"        # Non-Root, SukiSU-SUSFS
+    local PROFILE="$1"          # NEO or TURBO
+    local ROOT_MODE="$2"        # Vanilla or SukiSU
     local DEFCONFIG="$3"        # defconfig filename
-    local ZIP_PREFIX="$4"       # Auraflow-Kernel-Balanced, etc.
-    local BOOT_NAME="$5"        # boot-auraflow-balanced.img, etc.
-    local SUBFOLDER_NAME="$6"   # Balanced-NonRoot, Balanced-SukiSU-SUSFS, etc.
-
+    local SUBFOLDER_NAME="${PROFILE}-${ROOT_MODE}"
     local TARGET_DIR="$ARTIFACTS_DIR/$SUBFOLDER_NAME"
     mkdir -p "$TARGET_DIR"
+
+    local DATE="$(date "+%Y%m%d")"
+    local ZIP_NAME=""
+    local BOOT_IMG_NAME=""
+
+    if [ "$ROOT_MODE" = "SukiSU" ]; then
+        ZIP_NAME="Auraflow-Kernel-${PROFILE}-SukiSU-v40939-SUSFS-${DATE}.zip"
+        BOOT_IMG_NAME="Auraflow-Boot-${PROFILE}-SukiSU-v40939-SUSFS-${DATE}.img"
+    else
+        ZIP_NAME="Auraflow-Kernel-${PROFILE}-Vanilla-${DATE}.zip"
+        BOOT_IMG_NAME="Auraflow-Boot-${PROFILE}-Vanilla-${DATE}.img"
+    fi
 
     local BUILD_START=$(date +"%s")
 
@@ -87,10 +96,6 @@ build_single_kernel() {
         exit 1
     fi
 
-    local TIME="$(date "+%Y%m%d-%H%M%S")"
-    local ZIP_NAME="${ZIP_PREFIX}-${TIME}.zip"
-    local BOOT_IMG_NAME="${BOOT_NAME}"
-
     echo -e "$green[+] Kernel compilation completed in $(($DIFF / 60))m $(($DIFF % 60))s.$nocol"
     echo -e "$yellow[*] Packaging flashable AnyKernel3 zip: $ZIP_NAME...$nocol"
 
@@ -126,8 +131,8 @@ build_single_kernel() {
     fi
 
     # For SukiSU variants, provide the matching SukiSU Ultra Manager APKs
-    if [[ "$SUBFOLDER_NAME" =~ "SukiSU" ]] && [ -d "$MANAGERS_DIR" ]; then
-        echo -e "$yellow[*] Copying SukiSU Ultra Manager APKs to $SUBFOLDER_NAME and artifacts/SukiSU-Managers...$nocol"
+    if [ "$ROOT_MODE" = "SukiSU" ] && [ -d "$MANAGERS_DIR" ]; then
+        echo -e "$yellow[*] Providing SukiSU Ultra Manager APKs in $SUBFOLDER_NAME and artifacts/SukiSU-Managers...$nocol"
         mkdir -p "$ARTIFACTS_DIR/SukiSU-Managers"
         [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" "$ARTIFACTS_DIR/SukiSU-Managers/"
         [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" "$ARTIFACTS_DIR/SukiSU-Managers/"
@@ -155,7 +160,7 @@ print_summary() {
         echo -e "    SHA256: $sha"
     done
     echo ""
-    echo -e "$greenGenerated Fastboot Standalone Boot Images (fastboot flash boot <file>):$nocol"
+    echo -e "$greenGenerated Fastboot Standalone Boot Images (fastboot flash boot_ab <file>):$nocol"
     for img in "${GENERATED_IMGS[@]}"; do
         local sz=$(ls -lh "$ARTIFACTS_DIR/$img" 2>/dev/null | awk '{print $5}')
         local sha=$(sha256sum "$ARTIFACTS_DIR/$img" 2>/dev/null | awk '{print $1}')
@@ -163,49 +168,57 @@ print_summary() {
         echo -e "    SHA256: $sha"
     done
     echo ""
+    if [ -d "$ARTIFACTS_DIR/SukiSU-Managers" ]; then
+        echo -e "$greenSukiSU Ultra Manager APKs (v4.2.0 / 40939, UAPI v2):$nocol"
+        for apk in "$ARTIFACTS_DIR/SukiSU-Managers"/*.apk; do
+            if [ -f "$apk" ]; then
+                local apk_name="$(basename "$apk")"
+                local sz=$(ls -lh "$apk" 2>/dev/null | awk '{print $5}')
+                local sha=$(sha256sum "$apk" 2>/dev/null | awk '{print $1}')
+                echo -e "  * $apk_name ($sz)"
+                echo -e "    SHA256: $sha"
+            fi
+        done
+        echo ""
+    fi
     echo -e "All artifacts are organized into subfolders in: $ARTIFACTS_DIR"
     echo -e "$cyan=======================================================================$nocol"
 }
 
-# -------------------------------------------------------------
-# CLI Argument Parsing & Orchestration
-# -------------------------------------------------------------
-
 show_help() {
     echo "Auraflow Kernel Build Script"
     echo "Usage: $0 [MODE_OPTION] [PROFILE]"
+    echo ""
+    echo "Profiles:"
+    echo "  neo                        Intelligent daily driver (balanced & power efficient, default)"
+    echo "  turbo                      High performance profile (low latency & high sustained clocks)"
+    echo "  all                        Both NEO and TURBO profiles"
     echo ""
     echo "Modes:"
     echo "  --vanilla, -v, --nonroot   Build only Non-Root (Vanilla) variant (default)"
     echo "  --root, -r                 Build only SukiSU-Ultra + SUSFS + KPM variant"
     echo "  --all, -a                  Build both Non-Root and Root variants"
     echo ""
-    echo "Profiles:"
-    echo "  balanced                   Balanced profile (default)"
-    echo "  battery                    Battery saver profile"
-    echo "  performance                Performance profile"
-    echo "  all                        All profiles"
-    echo ""
     echo "Examples:"
-    echo "  $0 balanced                Build Non-Root Balanced kernel"
-    echo "  $0 --vanilla balanced      Build Non-Root Balanced kernel"
-    echo "  $0 --root balanced         Build SukiSU-Ultra Balanced kernel"
-    echo "  $0 --all balanced          Build both Non-Root and SukiSU Balanced kernels"
-    echo "  $0 --all                   Build all 6 kernel variants across all profiles"
-    echo "  $0 --root all              Build all 3 SukiSU variants"
+    echo "  $0                         Build Vanilla NEO kernel"
+    echo "  $0 neo                     Build Vanilla NEO kernel"
+    echo "  $0 turbo                   Build Vanilla TURBO kernel"
+    echo "  $0 --root neo              Build SukiSU NEO kernel"
+    echo "  $0 --root turbo            Build SukiSU TURBO kernel"
+    echo "  $0 --all neo               Build both Vanilla and SukiSU NEO kernels"
+    echo "  $0 --all turbo             Build both Vanilla and SukiSU TURBO kernels"
+    echo "  $0 --all                   Build all 4 kernel variants (NEO & TURBO, Vanilla & SukiSU)"
+    echo "  $0 --root all              Build SukiSU variants for both NEO and TURBO"
 }
 
 build_profile_nonroot() {
     local prof="$1"
     case "$prof" in
-        balanced)
-            build_single_kernel "Balanced" "Non-Root" "chenfeng_defconfig" "Auraflow-Kernel-Balanced" "boot-auraflow-balanced.img" "Balanced-NonRoot"
+        neo)
+            build_single_kernel "NEO" "Vanilla" "chenfeng_neo_defconfig"
             ;;
-        battery)
-            build_single_kernel "Battery" "Non-Root" "chenfeng_battery_defconfig" "Auraflow-Kernel-Battery" "boot-auraflow-battery.img" "Battery-NonRoot"
-            ;;
-        performance)
-            build_single_kernel "Performance" "Non-Root" "chenfeng_performance_defconfig" "Auraflow-Kernel-Performance" "boot-auraflow-performance.img" "Performance-NonRoot"
+        turbo)
+            build_single_kernel "TURBO" "Vanilla" "chenfeng_turbo_defconfig"
             ;;
     esac
 }
@@ -213,14 +226,11 @@ build_profile_nonroot() {
 build_profile_sukisu() {
     local prof="$1"
     case "$prof" in
-        balanced)
-            build_single_kernel "Balanced" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_sukisu_defconfig" "Auraflow-Kernel-Balanced-SukiSU-SUSFS" "boot-auraflow-balanced-sukisu.img" "Balanced-SukiSU-SUSFS"
+        neo)
+            build_single_kernel "NEO" "SukiSU" "chenfeng_neo_sukisu_defconfig"
             ;;
-        battery)
-            build_single_kernel "Battery" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_battery_sukisu_defconfig" "Auraflow-Kernel-Battery-SukiSU-SUSFS" "boot-auraflow-battery-sukisu.img" "Battery-SukiSU-SUSFS"
-            ;;
-        performance)
-            build_single_kernel "Performance" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_performance_sukisu_defconfig" "Auraflow-Kernel-Performance-SukiSU-SUSFS" "boot-auraflow-performance-sukisu.img" "Performance-SukiSU-SUSFS"
+        turbo)
+            build_single_kernel "TURBO" "SukiSU" "chenfeng_turbo_sukisu_defconfig"
             ;;
     esac
 }
@@ -246,8 +256,17 @@ while [[ $# -gt 0 ]]; do
             show_help
             exit 0
             ;;
-        balanced|battery|performance|all)
+        neo|turbo|all)
             PROFILE="${1,,}"
+            shift
+            ;;
+        # Backwards compatibility aliases
+        balanced|battery)
+            PROFILE="neo"
+            shift
+            ;;
+        performance)
+            PROFILE="turbo"
             shift
             ;;
         *)
@@ -262,12 +281,12 @@ if [ -z "$PROFILE" ]; then
     if [ "$MODE" = "all" ]; then
         PROFILE="all"
     else
-        PROFILE="balanced"
+        PROFILE="neo"
     fi
 fi
 
 if [ "$PROFILE" = "all" ]; then
-    TARGET_PROFILES=("balanced" "battery" "performance")
+    TARGET_PROFILES=("neo" "turbo")
 else
     TARGET_PROFILES=("$PROFILE")
 fi

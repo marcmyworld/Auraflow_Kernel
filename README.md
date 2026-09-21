@@ -1,69 +1,65 @@
 # Auraflow Kernel
 
-Custom, high-performance, and security-focused Linux kernel built for **Xiaomi SM8650 / SM8635** unified platforms (`chenfeng` - Redmi Turbo 3, and `peridot` - POCO F6).
+Custom, high-performance, and security-focused Linux kernel built for **Xiaomi SM8650 / SM8635** unified platforms (`chenfeng` - Xiaomi 14 Civi / Civi 4 Pro, and `peridot` - POCO F6 / Redmi Turbo 3).
 
 ---
 
 ## Highlights & Features
 
 - **Upstream LTS Base**: Rebased and updated to **Linux 6.1.174 LTS** (`android14-6.1.174_r00`).
-- **Unified cliffs / SM8635 Support**: Single unified codebase booting cleanly on both Redmi Turbo 3 (`chenfeng`) and POCO F6 (`peridot`).
-- **Compiler Toolchain**: Compiled using **ZyC Clang 16.0.6** with full LLVM integrated assembler (`LLVM_IAS=1`) and ThinLTO.
-- **Root & Security Options**:
-  - **Non-Root (Vanilla)**: Stock-compliant, unrooted kernel variant for banking apps, enterprise security, and maximum compatibility.
-  - **SukiSU-Ultra v4.2.0 (Build 40939)**: Next-generation in-kernel root management solution.
-  - **SUSFS v2.3.0 Integration**: Native filesystem and mount isolation with inline kernel hooks (`CONFIG_KSU_SUSFS=y`) to prevent root/module detection.
-  - **KPM (Kernel Patch Module)**: Live runtime in-kernel module patching support (`CONFIG_KPM=y`) controllable directly from the SukiSU Manager.
-- **Tuned Performance Profiles**:
-  - ⚖️ **Balanced** (Default): Perfectly balanced CPU frequency scaling, optimal thermal management, and smooth UI responsiveness for daily usage.
-  - 🔋 **Battery**: Energy-conscious governor tuning and delayed ramp-ups for maximized Screen-on-Time (SOT).
-  - ⚡ **Performance**: Aggressive scheduler responsiveness, minimal frame drops, and sustained frequencies for heavy gaming and demanding workloads.
+- **Unified cliffs / SM8635 Architecture**: Single unified codebase booting cleanly on both **Xiaomi 14 Civi / Civi 4 Pro** (`chenfeng`) and **POCO F6 / Redmi Turbo 3** (`peridot`).
+- **Compiler Toolchain**: Built with **ZyC Clang 16.0.6** utilizing the full LLVM integrated assembler (`LLVM_IAS=1`) and ThinLTO.
+- **Root & Security Configurations**:
+  - **Vanilla (Non-Root)**: Stock-compliant, unrooted kernel variant ideal for banking applications, enterprise compliance, and Play Integrity.
+  - **SukiSU-Ultra v4.2.0 (Build 40939)**: Next-generation in-kernel root management solution with UAPI v2.
+  - **SUSFS v2.3.0 Integration**: Native filesystem and mount isolation with inline kernel hooks (`CONFIG_KSU_SUSFS=y`) providing stealth root hiding.
+  - **KPM (Kernel Patch Module v0.11.0)**: Native in-kernel module loading and runtime control (`CONFIG_KPM=y`), fully integrated with the SukiSU-Ultra Manager UI.
+- **Modern Profile Philosophy**:
+  - 🌟 **NEO** (Default): Intelligent daily driver delivering optimal power efficiency and buttery smoothness. Configured with power-efficient workqueues (`CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y`), balanced energy curve governor (`CONFIG_KP_DEFAULT_MODE=2`), responsive touch boost, and extended battery life.
+  - 🚀 **TURBO**: High, plausibly feasible performance focusing on low-latency scheduling, sustained high CPU clocks, and rapid thread wakeups for heavy gaming and intensive multitasking (`CONFIG_KP_DEFAULT_MODE=3`, low-latency workqueues).
 
 ---
 
 ## Available Variants & Profiles
 
-Auraflow Kernel is provided in 3 performance profiles and 2 root configurations (a total of 6 variants):
+Auraflow Kernel is organized into **2 performance profiles** across **2 root modes** (2×2 = 4 release targets):
 
-| Profile | Variant | Features | Output Folder |
+| Profile | Mode | Key Configurations | Output Folder |
 |---|---|---|---|
-| **Balanced** | Non-Root (Vanilla) | Stock-like, unrooted, Knox/Play Integrity friendly | `artifacts/Balanced-NonRoot/` |
-| **Balanced** | SukiSU + SUSFS + KPM | SukiSU-Ultra 40939, SUSFS 2.3.0, KPM | `artifacts/Balanced-SukiSU-SUSFS/` |
-| **Battery** | Non-Root (Vanilla) | Battery-saver governor, unrooted | `artifacts/Battery-NonRoot/` |
-| **Battery** | SukiSU + SUSFS + KPM | Battery-saver governor, SukiSU + SUSFS + KPM | `artifacts/Battery-SukiSU-SUSFS/` |
-| **Performance** | Non-Root (Vanilla) | High-performance governor, unrooted | `artifacts/Performance-NonRoot/` |
-| **Performance** | SukiSU + SUSFS + KPM | High-performance governor, SukiSU + SUSFS + KPM | `artifacts/Performance-SukiSU-SUSFS/` |
+| **NEO** | Vanilla (Non-Root) | Power-efficient workqueues, balanced energy curve, unrooted | `artifacts/NEO-Vanilla/` |
+| **NEO** | SukiSU + SUSFS + KPM | Power-efficient workqueues, SukiSU-Ultra v40939, SUSFS v2.3.0, KPM | `artifacts/NEO-SukiSU/` |
+| **TURBO** | Vanilla (Non-Root) | Low-latency scheduling, sustained high clocks, unrooted | `artifacts/TURBO-Vanilla/` |
+| **TURBO** | SukiSU + SUSFS + KPM | Low-latency scheduling, SukiSU-Ultra v40939, SUSFS v2.3.0, KPM | `artifacts/TURBO-SukiSU/` |
 
 ---
 
-## Artifacts Organization
+## Artifacts Structure
 
 All compiled release packages and boot images are organized into dedicated subfolders inside `artifacts/`:
 
-```
+```text
 artifacts/
-├── Balanced-NonRoot/
-│   ├── Auraflow-Kernel-Balanced-<TIMESTAMP>.zip
-│   └── boot-auraflow-balanced.img
-├── Balanced-SukiSU-SUSFS/
-│   ├── Auraflow-Kernel-Balanced-SukiSU-SUSFS-<TIMESTAMP>.zip
-│   ├── boot-auraflow-balanced-sukisu.img
+├── NEO-Vanilla/
+│   ├── Auraflow-Kernel-NEO-Vanilla-<YYYYMMDD>.zip
+│   └── Auraflow-Boot-NEO-Vanilla-<YYYYMMDD>.img
+│
+├── NEO-SukiSU/
+│   ├── Auraflow-Kernel-NEO-SukiSU-v40939-SUSFS-<YYYYMMDD>.zip
+│   ├── Auraflow-Boot-NEO-SukiSU-v40939-SUSFS-<YYYYMMDD>.img
 │   ├── SukiSU_v4.2.0_Manager.apk
 │   └── SukiSU_v4.2.0_Spoofed_Manager.apk
-├── Battery-NonRoot/
-│   ├── Auraflow-Kernel-Battery-<TIMESTAMP>.zip
-│   └── boot-auraflow-battery.img
-├── Battery-SukiSU-SUSFS/
-│   ├── Auraflow-Kernel-Battery-SukiSU-SUSFS-<TIMESTAMP>.zip
-│   ├── boot-auraflow-battery-sukisu.img
+│
+├── TURBO-Vanilla/
+│   ├── Auraflow-Kernel-TURBO-Vanilla-<YYYYMMDD>.zip
+│   └── Auraflow-Boot-TURBO-Vanilla-<YYYYMMDD>.img
+│
+├── TURBO-SukiSU/
+│   ├── Auraflow-Kernel-TURBO-SukiSU-v40939-SUSFS-<YYYYMMDD>.zip
+│   ├── Auraflow-Boot-TURBO-SukiSU-v40939-SUSFS-<YYYYMMDD>.img
 │   ├── SukiSU_v4.2.0_Manager.apk
 │   └── SukiSU_v4.2.0_Spoofed_Manager.apk
-├── Performance-NonRoot/
-│   ├── Auraflow-Kernel-Performance-<TIMESTAMP>.zip
-│   └── boot-auraflow-performance.img
-└── Performance-SukiSU-SUSFS/
-    ├── Auraflow-Kernel-Performance-SukiSU-SUSFS-<TIMESTAMP>.zip
-    ├── boot-auraflow-performance-sukisu.img
+│
+└── SukiSU-Managers/
     ├── SukiSU_v4.2.0_Manager.apk
     └── SukiSU_v4.2.0_Spoofed_Manager.apk
 ```
@@ -73,81 +69,80 @@ artifacts/
 ## Installation Guide
 
 ### Method 1: Custom Recovery (TWRP / OrangeFox) — Recommended
-1. Reboot phone to custom recovery.
-2. Transfer the desired `Auraflow-Kernel-<Profile>-*.zip` to device storage.
-3. Flash the `.zip` file using the recovery flash menu.
-4. Reboot system.
+1. Reboot the device into custom recovery.
+2. Copy the desired `Auraflow-Kernel-<Profile>-*.zip` to device storage.
+3. Flash the `.zip` archive via the recovery install menu.
+4. Reboot to system.
 
-### Method 2: Fastboot Boot Image
-1. Reboot phone to Fastboot mode (`adb reboot bootloader`).
-2. Flash the standalone boot image:
+### Method 2: Fastboot Standalone Boot Image
+1. Reboot your device into Fastboot mode:
    ```bash
-   fastboot flash boot boot-auraflow-<profile>.img
+   adb reboot bootloader
    ```
-3. Reboot device:
+2. Flash the standalone boot image directly to both slots:
+   ```bash
+   fastboot flash boot_ab <boot_image_name>.img
+   ```
+   *Example:*
+   ```bash
+   fastboot flash boot_ab Auraflow-Boot-NEO-SukiSU-v40939-SUSFS-20260921.img
+   ```
+3. Reboot the phone:
    ```bash
    fastboot reboot
    ```
 
-### SukiSU Manager Setup (For Root Variants)
-- For SukiSU variants, install the matching `SukiSU_v4.2.0_Manager.apk` or `SukiSU_v4.2.0_Spoofed_Manager.apk` located in the variant's folder.
-- The manager matches the kernel version code (`40939`) and UAPI (`2`) 1:1, unlocking the full Superuser, Module, and KPM management features without version mismatch warnings.
+### SukiSU Ultra Manager Setup (Root Variants)
+- For SukiSU variants, install `SukiSU_v4.2.0_Manager.apk` or `SukiSU_v4.2.0_Spoofed_Manager.apk` from the variant folder or `artifacts/SukiSU-Managers/`.
+- The Manager is compiled with matching version code `40939` and UAPI `2`, signed with the Auraflow release keystore (embedded into the kernel driver).
+- KPM module management, Superuser grants, and SUSFS mount hiding are fully accessible right out of the box without version mismatch warnings.
 
 ---
 
 ## Building from Source
 
-The build system is orchestrated via `./build_kernel.sh`:
+The entire build and packaging pipeline is managed via `./build_kernel.sh`:
 
-### Build Non-Root (Vanilla) Variants
+### Build Vanilla (Non-Root) Variants
 ```bash
-# Build Balanced Non-Root (default)
-./build_kernel.sh balanced
-# or
-./build_kernel.sh --vanilla balanced
+# Build NEO Vanilla (default)
+./build_kernel.sh neo
+# or explicitly
+./build_kernel.sh --vanilla neo
 
-# Build Battery Non-Root
-./build_kernel.sh --vanilla battery
-
-# Build Performance Non-Root
-./build_kernel.sh --vanilla performance
+# Build TURBO Vanilla
+./build_kernel.sh --vanilla turbo
 ```
 
 ### Build SukiSU-Ultra + SUSFS + KPM Variants
 ```bash
-# Build Balanced SukiSU-Ultra variant
-./build_kernel.sh --root balanced
+# Build NEO SukiSU variant
+./build_kernel.sh --root neo
 
-# Build Battery SukiSU-Ultra variant
-./build_kernel.sh --root battery
-
-# Build Performance SukiSU-Ultra variant
-./build_kernel.sh --root performance
+# Build TURBO SukiSU variant
+./build_kernel.sh --root turbo
 ```
 
-### Build All Types for a Profile
+### Build Both Variants for a Profile
 ```bash
-# Build both Non-Root and SukiSU for Balanced
-./build_kernel.sh --all balanced
+# Build both Vanilla and SukiSU for NEO
+./build_kernel.sh --all neo
 
-# Build both Non-Root and SukiSU for Battery
-./build_kernel.sh --all battery
-
-# Build both Non-Root and SukiSU for Performance
-./build_kernel.sh --all performance
+# Build both Vanilla and SukiSU for TURBO
+./build_kernel.sh --all turbo
 ```
 
-### Build Everything (All 6 Variants)
+### Build All 4 Variants
 ```bash
 ./build_kernel.sh --all
 ```
 
 ---
 
-## Hardware & Compatibility
+## Hardware Compatibility
 
-- **Devices**:
-  - Xiaomi Redmi Turbo 3 (`chenfeng`)
-  - POCO F6 (`peridot`)
-- **Platform**: Qualcomm Snapdragon 8s Gen 3 (SM8635 / SM8650-compatible architecture)
-- **Supported Android Versions**: Android 14 (HyperOS, AOSP, Evolution X, LineageOS)
+- **Target Devices**:
+  - **Xiaomi 14 Civi / Civi 4 Pro** (`chenfeng` / `chenfengin`)
+  - **POCO F6 / Redmi Turbo 3** (`peridot`)
+- **SoC**: Qualcomm Snapdragon 8s Gen 3 (`SM8635` / `cliffs`)
+- **Supported Android OS**: Android 14 (Xiaomi HyperOS, AOSP, LineageOS, Evolution X)

@@ -226,10 +226,10 @@ int sukisu_super_access(const char *struct_name, const char *member_name,
             for (size_t i1 = 0; i1 < info->count; i1++) {
                 if (strcmp(info->members[i1].name, member_name) == 0) {
                     if (out_offset)
-                        *out_offset = info->members[i].offset;
+                        *out_offset = info->members[i1].offset;
 
                     if (out_size)
-                        *out_size = info->members[i].size;
+                        *out_size = info->members[i1].size;
 
                     return 0;
                 }
