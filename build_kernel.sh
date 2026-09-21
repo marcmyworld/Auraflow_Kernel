@@ -127,9 +127,10 @@ build_single_kernel() {
 
     # For SukiSU variants, provide the matching SukiSU Ultra Manager APKs
     if [[ "$SUBFOLDER_NAME" =~ "SukiSU" ]] && [ -d "$MANAGERS_DIR" ]; then
-        echo -e "$yellow[*] Copying SukiSU Ultra Manager APKs to $SUBFOLDER_NAME...$nocol"
-        [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" "$TARGET_DIR/"
-        [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" "$TARGET_DIR/"
+        echo -e "$yellow[*] Copying SukiSU Ultra Manager APKs to $SUBFOLDER_NAME and artifacts/SukiSU-Managers...$nocol"
+        mkdir -p "$ARTIFACTS_DIR/SukiSU-Managers"
+        [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Manager.apk" "$ARTIFACTS_DIR/SukiSU-Managers/"
+        [ -f "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" ] && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" "$TARGET_DIR/" && cp -fp "$MANAGERS_DIR/SukiSU_v4.2.0_Spoofed_Manager.apk" "$ARTIFACTS_DIR/SukiSU-Managers/"
     fi
 
     echo -e "$green=================================================$nocol"
@@ -166,67 +167,120 @@ print_summary() {
     echo -e "$cyan=======================================================================$nocol"
 }
 
-TARGET="${1,,}"
+# -------------------------------------------------------------
+# CLI Argument Parsing & Orchestration
+# -------------------------------------------------------------
 
-case "$TARGET" in
-    all)
-        echo -e "$green[*] Building all 6 Auraflow Kernel variants (3 Profiles x 2 Root Modes)...$nocol"
-        # 1. Balanced Non-Root
-        build_single_kernel "Balanced" "Non-Root" "chenfeng_defconfig" "Auraflow-Kernel-Balanced" "boot-auraflow-balanced.img" "Balanced-NonRoot"
-        # 2. Balanced SukiSU-Ultra + SUSFS + KPM
-        build_single_kernel "Balanced" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_sukisu_defconfig" "Auraflow-Kernel-Balanced-SukiSU-SUSFS" "boot-auraflow-balanced-sukisu.img" "Balanced-SukiSU-SUSFS"
-        # 3. Battery Non-Root
-        build_single_kernel "Battery" "Non-Root" "chenfeng_battery_defconfig" "Auraflow-Kernel-Battery" "boot-auraflow-battery.img" "Battery-NonRoot"
-        # 4. Battery SukiSU-Ultra + SUSFS + KPM
-        build_single_kernel "Battery" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_battery_sukisu_defconfig" "Auraflow-Kernel-Battery-SukiSU-SUSFS" "boot-auraflow-battery-sukisu.img" "Battery-SukiSU-SUSFS"
-        # 5. Performance Non-Root
-        build_single_kernel "Performance" "Non-Root" "chenfeng_performance_defconfig" "Auraflow-Kernel-Performance" "boot-auraflow-performance.img" "Performance-NonRoot"
-        # 6. Performance SukiSU-Ultra + SUSFS + KPM
-        build_single_kernel "Performance" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_performance_sukisu_defconfig" "Auraflow-Kernel-Performance-SukiSU-SUSFS" "boot-auraflow-performance-sukisu.img" "Performance-SukiSU-SUSFS"
-        print_summary
-        ;;
-    nonroot)
-        echo -e "$green[*] Building all 3 Non-Root variants...$nocol"
-        build_single_kernel "Balanced" "Non-Root" "chenfeng_defconfig" "Auraflow-Kernel-Balanced" "boot-auraflow-balanced.img" "Balanced-NonRoot"
-        build_single_kernel "Battery" "Non-Root" "chenfeng_battery_defconfig" "Auraflow-Kernel-Battery" "boot-auraflow-battery.img" "Battery-NonRoot"
-        build_single_kernel "Performance" "Non-Root" "chenfeng_performance_defconfig" "Auraflow-Kernel-Performance" "boot-auraflow-performance.img" "Performance-NonRoot"
-        print_summary
-        ;;
-    sukisu)
-        echo -e "$green[*] Building all 3 SukiSU-Ultra + SUSFS + KPM variants...$nocol"
-        build_single_kernel "Balanced" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_sukisu_defconfig" "Auraflow-Kernel-Balanced-SukiSU-SUSFS" "boot-auraflow-balanced-sukisu.img" "Balanced-SukiSU-SUSFS"
-        build_single_kernel "Battery" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_battery_sukisu_defconfig" "Auraflow-Kernel-Battery-SukiSU-SUSFS" "boot-auraflow-battery-sukisu.img" "Battery-SukiSU-SUSFS"
-        build_single_kernel "Performance" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_performance_sukisu_defconfig" "Auraflow-Kernel-Performance-SukiSU-SUSFS" "boot-auraflow-performance-sukisu.img" "Performance-SukiSU-SUSFS"
-        print_summary
-        ;;
-    balanced)
-        build_single_kernel "Balanced" "Non-Root" "chenfeng_defconfig" "Auraflow-Kernel-Balanced" "boot-auraflow-balanced.img" "Balanced-NonRoot"
-        print_summary
-        ;;
-    balanced-sukisu)
-        build_single_kernel "Balanced" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_sukisu_defconfig" "Auraflow-Kernel-Balanced-SukiSU-SUSFS" "boot-auraflow-balanced-sukisu.img" "Balanced-SukiSU-SUSFS"
-        print_summary
-        ;;
-    battery)
-        build_single_kernel "Battery" "Non-Root" "chenfeng_battery_defconfig" "Auraflow-Kernel-Battery" "boot-auraflow-battery.img" "Battery-NonRoot"
-        print_summary
-        ;;
-    battery-sukisu)
-        build_single_kernel "Battery" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_battery_sukisu_defconfig" "Auraflow-Kernel-Battery-SukiSU-SUSFS" "boot-auraflow-battery-sukisu.img" "Battery-SukiSU-SUSFS"
-        print_summary
-        ;;
-    performance)
-        build_single_kernel "Performance" "Non-Root" "chenfeng_performance_defconfig" "Auraflow-Kernel-Performance" "boot-auraflow-performance.img" "Performance-NonRoot"
-        print_summary
-        ;;
-    performance-sukisu)
-        build_single_kernel "Performance" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_performance_sukisu_defconfig" "Auraflow-Kernel-Performance-SukiSU-SUSFS" "boot-auraflow-performance-sukisu.img" "Performance-SukiSU-SUSFS"
-        print_summary
-        ;;
-    *)
-        echo -e "$yellow[*] Building Balanced variants (Non-Root & SukiSU-Ultra)...$nocol"
-        build_single_kernel "Balanced" "Non-Root" "chenfeng_defconfig" "Auraflow-Kernel-Balanced" "boot-auraflow-balanced.img" "Balanced-NonRoot"
-        build_single_kernel "Balanced" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_sukisu_defconfig" "Auraflow-Kernel-Balanced-SukiSU-SUSFS" "boot-auraflow-balanced-sukisu.img" "Balanced-SukiSU-SUSFS"
-        print_summary
-        ;;
-esac
+show_help() {
+    echo "Auraflow Kernel Build Script"
+    echo "Usage: $0 [MODE_OPTION] [PROFILE]"
+    echo ""
+    echo "Modes:"
+    echo "  --vanilla, -v, --nonroot   Build only Non-Root (Vanilla) variant (default)"
+    echo "  --root, -r                 Build only SukiSU-Ultra + SUSFS + KPM variant"
+    echo "  --all, -a                  Build both Non-Root and Root variants"
+    echo ""
+    echo "Profiles:"
+    echo "  balanced                   Balanced profile (default)"
+    echo "  battery                    Battery saver profile"
+    echo "  performance                Performance profile"
+    echo "  all                        All profiles"
+    echo ""
+    echo "Examples:"
+    echo "  $0 balanced                Build Non-Root Balanced kernel"
+    echo "  $0 --vanilla balanced      Build Non-Root Balanced kernel"
+    echo "  $0 --root balanced         Build SukiSU-Ultra Balanced kernel"
+    echo "  $0 --all balanced          Build both Non-Root and SukiSU Balanced kernels"
+    echo "  $0 --all                   Build all 6 kernel variants across all profiles"
+    echo "  $0 --root all              Build all 3 SukiSU variants"
+}
+
+build_profile_nonroot() {
+    local prof="$1"
+    case "$prof" in
+        balanced)
+            build_single_kernel "Balanced" "Non-Root" "chenfeng_defconfig" "Auraflow-Kernel-Balanced" "boot-auraflow-balanced.img" "Balanced-NonRoot"
+            ;;
+        battery)
+            build_single_kernel "Battery" "Non-Root" "chenfeng_battery_defconfig" "Auraflow-Kernel-Battery" "boot-auraflow-battery.img" "Battery-NonRoot"
+            ;;
+        performance)
+            build_single_kernel "Performance" "Non-Root" "chenfeng_performance_defconfig" "Auraflow-Kernel-Performance" "boot-auraflow-performance.img" "Performance-NonRoot"
+            ;;
+    esac
+}
+
+build_profile_sukisu() {
+    local prof="$1"
+    case "$prof" in
+        balanced)
+            build_single_kernel "Balanced" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_sukisu_defconfig" "Auraflow-Kernel-Balanced-SukiSU-SUSFS" "boot-auraflow-balanced-sukisu.img" "Balanced-SukiSU-SUSFS"
+            ;;
+        battery)
+            build_single_kernel "Battery" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_battery_sukisu_defconfig" "Auraflow-Kernel-Battery-SukiSU-SUSFS" "boot-auraflow-battery-sukisu.img" "Battery-SukiSU-SUSFS"
+            ;;
+        performance)
+            build_single_kernel "Performance" "SukiSU-Ultra + SUSFS + KPM" "chenfeng_performance_sukisu_defconfig" "Auraflow-Kernel-Performance-SukiSU-SUSFS" "boot-auraflow-performance-sukisu.img" "Performance-SukiSU-SUSFS"
+            ;;
+    esac
+}
+
+MODE="vanilla"
+PROFILE=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --root|-r)
+            MODE="root"
+            shift
+            ;;
+        --vanilla|--vanila|-v|--nonroot)
+            MODE="vanilla"
+            shift
+            ;;
+        --all|-a)
+            MODE="all"
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        balanced|battery|performance|all)
+            PROFILE="${1,,}"
+            shift
+            ;;
+        *)
+            echo -e "$red[!] Unknown argument: $1$nocol"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+if [ -z "$PROFILE" ]; then
+    if [ "$MODE" = "all" ]; then
+        PROFILE="all"
+    else
+        PROFILE="balanced"
+    fi
+fi
+
+if [ "$PROFILE" = "all" ]; then
+    TARGET_PROFILES=("balanced" "battery" "performance")
+else
+    TARGET_PROFILES=("$PROFILE")
+fi
+
+echo -e "$green[*] Build Mode: $MODE | Profile(s): ${TARGET_PROFILES[*]}$nocol"
+
+for p in "${TARGET_PROFILES[@]}"; do
+    if [ "$MODE" = "vanilla" ] || [ "$MODE" = "all" ]; then
+        build_profile_nonroot "$p"
+    fi
+    if [ "$MODE" = "root" ] || [ "$MODE" = "all" ]; then
+        build_profile_sukisu "$p"
+    fi
+done
+
+print_summary

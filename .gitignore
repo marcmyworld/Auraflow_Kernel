@@ -186,6 +186,8 @@ out/
 *.img
 *.log
 out_artifacts/
-KernelSU/
 artifacts/
-tools/sukisu_managers/
+tmp/
+.gradle/
+.cxx/
+build/
